@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BookRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
@@ -25,7 +27,7 @@ class Book
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $industryIdentifiers = null;
+    private ?array $industryIdentifiers = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $pageCount = null;
@@ -50,6 +52,18 @@ class Book
 
     #[ORM\Column]
     private ?int $numAvailable = null;
+
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'booksInCategory')]
+    private Collection $categories;
+
+    #[ORM\ManyToMany(targetEntity: Author::class)]
+    private Collection $authors;
+
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+        $this->authors = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -208,6 +222,54 @@ class Book
     public function setNumAvailable(int $numAvailable): self
     {
         $this->numAvailable = $numAvailable;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Author>
+     */
+    public function getAuthors(): Collection
+    {
+        return $this->authors;
+    }
+
+    public function addAuthor(Author $author): self
+    {
+        if (!$this->authors->contains($author)) {
+            $this->authors->add($author);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthor(Author $author): self
+    {
+        $this->authors->removeElement($author);
 
         return $this;
     }

@@ -3,3 +3,7 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+curl_search:
+    path: /books/{title}
+    controller: App\Controller\BookController::searchBooksByTitle

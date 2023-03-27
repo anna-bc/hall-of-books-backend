@@ -56,8 +56,9 @@ class Book
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'booksInCategory')]
     private Collection $categories;
 
-    #[ORM\ManyToMany(targetEntity: Author::class)]
+    #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
     private Collection $authors;
+
 
     public function __construct()
     {

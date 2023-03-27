@@ -5,5 +5,5 @@ controllers:
     type: attribute
 
 curl_search:
-    path: /books/searchByTitle
+    path: /books/{title}
     controller: App\Controller\BookController::searchBooksByTitle

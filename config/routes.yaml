@@ -5,7 +5,7 @@ controllers:
     type: attribute
 
 curl_search_title:
-    path: /books?title={title}
+    path: /books/{title}
     controller: App\Controller\BookController::searchBooksByTitle
 
 curl_search_author:

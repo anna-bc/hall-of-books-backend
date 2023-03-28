@@ -34,17 +34,19 @@ class BookController extends AbstractController
 
   public function searchBooksByTitle(string $title): Response
   {
+    $title = urldecode($title);
+    var_dump($title);
     $bookRepository = $this->entityManager->getRepository(Book::class);
-    $book = $bookRepository->findOneBy(['title' => $title]);
-    // $books = $bookRepository->createQueryBuilder('b')
-    // ->where('b.title LIKE :title')
-    // ->setParameter('title', '%' . $title . '%')
-    // ->getQuery()
-    // ->getResult();
+    // $book = $bookRepository->findOneBy(['title' => $title]);
+    $books = $bookRepository->createQueryBuilder('b')
+    ->where('b.title LIKE :title')
+    ->setParameter('title', '%' . $title . '%')
+    ->getQuery()
+    ->getResult();
 
-    if ($book) {
+    if ($books) {
       // Book found in the database, return the book information
-      return $this->json(['result' => $book]);
+      return $this->json(['result' => $books]);
     }
 
     $apiKey = getenv('BOOKS_APP_API_KEY');
@@ -98,6 +100,7 @@ class BookController extends AbstractController
 
     return $this->json(['result' => $book]);
   }
+
 
   public function searchBooksByAuthor(string $author): Response
   {

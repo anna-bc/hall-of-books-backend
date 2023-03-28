@@ -7,3 +7,7 @@ controllers:
 curl_search:
     path: /books/{title}
     controller: App\Controller\BookController::searchBooksByTitle
+
+register_user:
+    path: /sign-up
+    controller: App\Controller\RegistrationController::index

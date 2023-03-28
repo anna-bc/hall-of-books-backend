@@ -37,7 +37,6 @@ class BookController extends AbstractController
   public function searchBooksByTitle(string $title): Response
   {
     $title = urldecode($title);
-    var_dump($title);
     $bookRepository = $this->entityManager->getRepository(Book::class);
     // $book = $bookRepository->findOneBy(['title' => $title]);
     $books = $bookRepository->createQueryBuilder('b')

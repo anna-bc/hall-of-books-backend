@@ -35,14 +35,12 @@ class BookController extends AbstractController
     return $this->json(['result' => json_decode($result)]);
   }
 
-  public function searchBooksByCategory(string $title): Response
+  public function searchBooksByCategory(string $category): Response
   {
     $apiKey = getenv('BOOKS_APP_API_KEY');
-    $url = "https://www.googleapis.com/books/v1/volumes?q=?+intitle:$category&key=$apiKey";
+    $url = "https://www.googleapis.com/books/v1/volumes?q=?+subject:$category&key=$apiKey";
     $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
 
     return $this->json(['result' => json_decode($result)]);
   }
-
-
 }

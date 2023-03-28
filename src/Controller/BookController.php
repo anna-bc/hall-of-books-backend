@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
 use function getenv;
 
 
@@ -46,7 +48,13 @@ class BookController extends AbstractController
 
     if ($books) {
       // Book found in the database, return the book information
-      return $this->json(['result' => $books]);
+      return $this->json(['result' => $books],
+        Response::HTTP_OK,
+        [],
+        [ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj) {
+          return $obj->getId();
+        }]
+      );
     }
 
     $apiKey = getenv('BOOKS_APP_API_KEY');

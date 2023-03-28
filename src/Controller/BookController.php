@@ -36,6 +36,11 @@ class BookController extends AbstractController
   {
     $bookRepository = $this->entityManager->getRepository(Book::class);
     $book = $bookRepository->findOneBy(['title' => $title]);
+    // $books = $bookRepository->createQueryBuilder('b')
+    // ->where('b.title LIKE :title')
+    // ->setParameter('title', '%' . $title . '%')
+    // ->getQuery()
+    // ->getResult();
 
     if ($book) {
       // Book found in the database, return the book information
@@ -60,7 +65,7 @@ class BookController extends AbstractController
     $book->setAverageRating($bookData['volumeInfo']['averageRating'] ?? 0);
     $book->setRatingsCount($bookData['volumeInfo']['ratingsCount'] ?? 0);
     $book->setMaturityRating($bookData['volumeInfo']['maturityRating'] ?? '');
-    $book->setThumbnailUrl($bookData['volumeInfo']['imageLinks']['thumbnail']?? '');
+    $book->setThumbnailUrl($bookData['volumeInfo']['imageLinks']['thumbnail'] ?? '');
     $book->setLanguageCode($bookData['volumeInfo']['language'] ?? '');
     $book->setQuantity(5);
     $book->setNumAvailable(5);

@@ -10,7 +10,6 @@ use App\Infrastructure\Curl\Strategy\CurlGetStrategy;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -108,6 +107,15 @@ class BookController extends AbstractController
     return $this->json(['result' => $book]);
   }
 
+  public function searchBooksByCategory(string $category): Response
+  {
+    $apiKey = getenv('BOOKS_APP_API_KEY');
+    $url = "https://www.googleapis.com/books/v1/volumes?q=?+subject:$category&key=$apiKey";
+    $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
+
+    return $this->json(['result' => json_decode($result)]);
+  }
+
 
   public function searchBooksByAuthor(string $author): Response
   {
@@ -117,5 +125,6 @@ class BookController extends AbstractController
 
     return $this->json(['result' => json_decode($result)]);
   }
-
 }
+
+

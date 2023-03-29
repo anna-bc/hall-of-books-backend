@@ -35,23 +35,24 @@ class BookController extends AbstractController
 
   public function searchBooksByTitle(string $title): Response
   {
-    $title = urldecode($title);
     $bookRepository = $this->entityManager->getRepository(Book::class);
-    // $book = $bookRepository->findOneBy(['title' => $title]);
     $books = $bookRepository->createQueryBuilder('b')
-    ->where('b.title LIKE :title')
-    ->setParameter('title', '%' . $title . '%')
-    ->getQuery()
-    ->getResult();
+      ->where('b.title LIKE :title')
+      ->setParameter('title', '%' . urldecode($title) . '%')
+      ->getQuery()
+      ->getResult();
 
     if ($books) {
       // Book found in the database, return the book information
-      return $this->json(['result' => $books],
+      return $this->json(
+        ['result' => $books],
         Response::HTTP_OK,
         [],
-        [ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj) {
-          return $obj->getId();
-        }]
+        [
+          ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj) {
+            return $obj->getId();
+          }
+        ]
       );
     }
 
@@ -61,50 +62,53 @@ class BookController extends AbstractController
 
     $data = json_decode($result, true);
 
-    // Save the book in the database
-    $bookData = $data['items'][0];
-    $book = new Book();
-    $book->setId($bookData['id']);
-    $book->setTitle($bookData['volumeInfo']['title']);
-    $book->setPublisher($bookData['volumeInfo']['publisher'] ?? '');
-    $book->setPublishedDate($bookData['volumeInfo']['publishedDate'] ?? '');
-    $book->setDescription($bookData['volumeInfo']['description'] ?? '');
-    $book->setPageCount($bookData['volumeInfo']['pageCount'] ?? 0);
-    $book->setAverageRating($bookData['volumeInfo']['averageRating'] ?? 0);
-    $book->setRatingsCount($bookData['volumeInfo']['ratingsCount'] ?? 0);
-    $book->setMaturityRating($bookData['volumeInfo']['maturityRating'] ?? '');
-    $book->setThumbnailUrl($bookData['volumeInfo']['imageLinks']['thumbnail'] ?? '');
-    $book->setLanguageCode($bookData['volumeInfo']['language'] ?? '');
-    $book->setQuantity(5);
-    $book->setNumAvailable(5);
+    $books = [];
+    foreach ($data['items'] ?? [] as $bookData) {
+      // Save the book in the database
+      $book = new Book();
+      $book->setId($bookData['id']);
+      $book->setTitle($bookData['volumeInfo']['title']);
+      $book->setPublisher($bookData['volumeInfo']['publisher'] ?? '');
+      $book->setPublishedDate($bookData['volumeInfo']['publishedDate'] ?? '');
+      $book->setDescription($bookData['volumeInfo']['description'] ?? '');
+      $book->setPageCount($bookData['volumeInfo']['pageCount'] ?? 0);
+      $book->setAverageRating($bookData['volumeInfo']['averageRating'] ?? 0);
+      $book->setRatingsCount($bookData['volumeInfo']['ratingsCount'] ?? 0);
+      $book->setMaturityRating($bookData['volumeInfo']['maturityRating'] ?? '');
+      $book->setThumbnailUrl($bookData['volumeInfo']['imageLinks']['thumbnail'] ?? '');
+      $book->setLanguageCode($bookData['volumeInfo']['language'] ?? '');
+      $book->setQuantity(5);
+      $book->setNumAvailable(5);
 
-    // Save categories
-    foreach ($bookData['volumeInfo']['categories'] ?? [] as $categoryName) {
-      $category = $this->entityManager->getRepository(Category::class)->findOneBy(['categoryName' => $categoryName]);
-      if (!$category) {
-        $category = new Category();
-        $category->setCategoryName($categoryName);
-        $this->entityManager->persist($category);
+      // Save categories
+      foreach ($bookData['volumeInfo']['categories'] ?? [] as $categoryName) {
+        $category = $this->entityManager->getRepository(Category::class)->findOneBy(['categoryName' => $categoryName]);
+        if (!$category) {
+          $category = new Category();
+          $category->setCategoryName($categoryName);
+          $this->entityManager->persist($category);
+        }
+        $book->addCategory($category);
       }
-      $book->addCategory($category);
-    }
 
-    // Save authors
-    foreach ($bookData['volumeInfo']['authors'] ?? [] as $authorName) {
-      $author = $this->entityManager->getRepository(Author::class)->findOneBy(['lastName' => $authorName]);
-      if (!$author) {
-        $author = new Author();
-        $author->setLastName($authorName);
-        $this->entityManager->persist($author);
+      // Save authors
+      foreach ($bookData['volumeInfo']['authors'] ?? [] as $authorName) {
+        $author = $this->entityManager->getRepository(Author::class)->findOneBy(['lastName' => $authorName]);
+        if (!$author) {
+          $author = new Author();
+          $author->setLastName($authorName);
+          $this->entityManager->persist($author);
+        }
+        $book->addAuthor($author);
       }
-      $book->addAuthor($author);
+
+      $this->entityManager->persist($book);
+
+      $this->entityManager->flush();
+      //$books[] = $book;
     }
-
-    $this->entityManager->persist($book);
-
-    $this->entityManager->flush();
-
-    return $this->json(['result' => $book]);
+    
+    return $this->json(['result' => $books]);
   }
 
   public function searchBooksByCategory(string $category): Response
@@ -116,7 +120,6 @@ class BookController extends AbstractController
     return $this->json(['result' => json_decode($result)]);
   }
 
-
   public function searchBooksByAuthor(string $author): Response
   {
     $apiKey = getenv('BOOKS_APP_API_KEY');
@@ -125,6 +128,5 @@ class BookController extends AbstractController
 
     return $this->json(['result' => json_decode($result)]);
   }
+
 }
-
-

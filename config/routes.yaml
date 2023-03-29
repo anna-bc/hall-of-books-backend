@@ -7,3 +7,7 @@ controllers:
 curl_search:
     path: /books/{title}
     controller: App\Controller\BookController::searchBooksByTitle
+
+user:
+    path: /user/favortites
+    controller: App\Controller\UserController::displayFavorites

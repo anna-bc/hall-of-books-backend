@@ -10,7 +10,6 @@ curl_search_title:
 
 curl_search_author:
     path: /books/author={author}
-    path: /books/author={author}
     controller: App\Controller\BookController::searchBooksByAuthor
 
 curl_search_category:

@@ -8,6 +8,6 @@ curl_search:
     path: /books/{title}
     controller: App\Controller\BookController::searchBooksByTitle
 
-curl_search:
-    path: /books/{category}
+curl_search_category:
+    path: /books/category={category}
     controller: App\Controller\BookController::searchBooksByCategory

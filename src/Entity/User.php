@@ -189,6 +189,28 @@ private Collection $borrowedBooks;
   {
     $this->borrowedBooks->removeElement($borrowedBook);
 
-    return $this;
-  }
+        return $this;
+    }
+
+    /**
+     * Returning a salt is only needed if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // clear any temporary sensitive data of the user, ex:
+        // $this->plainPassword = null;
+
+        return $this;
+    }
 }

@@ -105,10 +105,19 @@ class BookController extends AbstractController
       $this->entityManager->persist($book);
 
       $this->entityManager->flush();
-      //$books[] = $book;
+      $books[] = $book;
     }
-    
-    return $this->json(['result' => $books]);
+
+    return $this->json(
+      ['result' => $books],
+      Response::HTTP_OK,
+      [],
+      [
+        ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj) {
+          return $obj->getId();
+        }
+      ]
+    );
   }
 
   public function searchBooksByCategory(string $category): Response
@@ -128,5 +137,4 @@ class BookController extends AbstractController
 
     return $this->json(['result' => json_decode($result)]);
   }
-
 }

@@ -28,7 +28,7 @@ class Book
   private ?string $description = null;
 
   #[ORM\Column(length: 255)]
-  private ?array $industryIdentifiers = null;
+  private ?array $industryIdentifiers = [];
 
   #[ORM\Column(nullable: true)]
   private ?int $pageCount = null;
@@ -128,12 +128,12 @@ class Book
     return $this;
   }
 
-  public function getIndustryIdentifiers(): ?string
+  public function getIndustryIdentifiers(): ?array
   {
     return $this->industryIdentifiers;
   }
 
-  public function setIndustryIdentifiers(string $industryIdentifiers): self
+  public function setIndustryIdentifiers(array $industryIdentifiers): self
   {
     $this->industryIdentifiers = $industryIdentifiers;
 

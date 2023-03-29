@@ -4,6 +4,7 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+
 curl_search:
     path: /books/title={title}
     controller: App\Controller\BookController::searchBooksByTitle

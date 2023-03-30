@@ -16,3 +16,7 @@ curl_search_category:
 user:
     path: /user/favortites
     controller: App\Controller\UserController::displayFavorites
+
+user:
+    path: /user/borrowed
+    controller: App\Controller\UserController::displayBorrowed

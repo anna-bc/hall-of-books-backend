@@ -26,4 +26,9 @@ class UserController extends AbstractController
         $user = $this->userRepository->find($id);
         return $this->json(['favorites' => $user->getFavorites()]);
     }
+
+    public function displayBorrowed(Id $id) {
+        $user = $this->userRepository->find($id);
+        return $this->json(['borrowed' => $user->getBorrowedBooks()]);
+    }
 }

@@ -4,9 +4,18 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-curl_search:
-    path: /books/{title}
+curl_search_title:
+    path: /books/title={title}
     controller: App\Controller\BookController::searchBooksByTitle
+
+curl_search_author:
+    path: /books/author={author}
+    controller: App\Controller\BookController::searchBooksByAuthor
+
+curl_search_category:
+    path: /books/category={category}
+    controller: App\Controller\BookController::searchBooksByCategory
+
 
 register_user:
     path: /sign-up

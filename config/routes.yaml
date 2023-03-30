@@ -4,9 +4,14 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+
 curl_search:
-    path: /books/{title}
+    path: /books/title={title}
     controller: App\Controller\BookController::searchBooksByTitle
+
+curl_search_category:
+    path: /books/category={category}
+    controller: App\Controller\BookController::searchBooksByCategory
 
 user:
     path: /user/favortites

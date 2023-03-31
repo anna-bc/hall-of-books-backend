@@ -23,3 +23,7 @@ user_favorites:
 user_borrowed:
     path: /my/borrowed
     controller: App\Controller\UserController::displayBorrowed
+
+register_user:
+    path: /sign-up
+    controller: App\Controller\RegistrationController::index

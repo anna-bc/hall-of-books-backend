@@ -12,18 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository)
-    {}
+        private UserRepository $userRepository
+    ) {}
 
-    #[Route('/user', name: 'app_user')]
-    public function index(): Response
+    public function displayFavorites(#[CurrentUser] ?User $user): Response
     {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
-        ]);
-    }
-
-    public function displayFavorites(#[CurrentUser] ?User $user) : Response {
         if ($user === null) {
             return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
         }
@@ -31,7 +24,8 @@ class UserController extends AbstractController
         return $this->json(['favorites' => $user->getFavorites()]);
     }
 
-    public function displayBorrowed(#[CurrentUser] ?User $user) : Response {
+    public function displayBorrowed(#[CurrentUser] ?User $user): Response
+    {
         if ($user === null) {
             return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
         }

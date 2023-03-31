@@ -15,3 +15,8 @@ curl_search_author:
 curl_search_category:
     path: /books/category={category}
     controller: App\Controller\BookController::searchBooksByCategory
+
+
+register_user:
+    path: /sign-up
+    controller: App\Controller\RegistrationController::index

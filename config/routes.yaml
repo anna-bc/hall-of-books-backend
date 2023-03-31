@@ -16,6 +16,13 @@ curl_search_category:
     path: /books/category={category}
     controller: App\Controller\BookController::searchBooksByCategory
 
+user_favorites:
+    path: /my/favorites
+    controller: App\Controller\UserController::displayFavorites
+
+user_borrowed:
+    path: /my/borrowed
+    controller: App\Controller\UserController::displayBorrowed
 
 register_user:
     path: /sign-up

@@ -54,10 +54,10 @@ class Book
   #[ORM\Column]
   private ?int $numAvailable = null;
 
-  #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'booksInCategory')]
+  #[ORM\ManyToMany(targetEntity: Category::class)]
   private Collection $categories;
 
-  #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
+  #[ORM\ManyToMany(targetEntity: Author::class)]
 
   private Collection $authors;
 

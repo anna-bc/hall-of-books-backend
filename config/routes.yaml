@@ -15,6 +15,10 @@ curl_search_author:
 curl_search_category:
     path: /books/category={category}
     controller: App\Controller\BookController::searchBooksByCategory
+  
+books_10_newest:
+    path: /books/
+    controller: App\Controller\BookController::displayNewestBooks
 
 user_favorites:
     path: /my/favorites

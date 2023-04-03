@@ -25,13 +25,6 @@ class BookController extends AbstractController
   ) {
   }
 
-  #[Route('/books', name: 'app_book')]
-  public function index(): Response
-  {
-    return $this->render('book/index.html.twig', [
-      'controller_name' => 'BookController',
-    ]);
-  }
 
   public function searchBooksByTitle(string $title): Response
   {
@@ -136,5 +129,26 @@ class BookController extends AbstractController
     $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
 
     return $this->json(['result' => json_decode($result)]);
+  }
+
+  public function displayNewestBooks(): Response
+  {
+    $bookRepository = $this->entityManager->getRepository(Book::class);
+    $books = $bookRepository->findBy(['languageCode' => 'en'], ['publishedDate' => 'DESC'], 10);
+
+    if (!$books) {
+      return $this->json(['result' => 'No Books Found']);
+    }
+
+    return $this->json(
+      ['result' => $books],
+      Response::HTTP_OK,
+      [],
+      [
+        ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($obj) {
+          return $obj->getId();
+        }
+      ]
+    );
   }
 }

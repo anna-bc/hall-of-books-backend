@@ -40,7 +40,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   private Collection $favorites;
 
   #[ORM\ManyToMany(targetEntity: Book::class)]
-
   #[ORM\JoinTable(name: 'user_borrowedBooks')]
   private Collection $borrowedBooks;
 

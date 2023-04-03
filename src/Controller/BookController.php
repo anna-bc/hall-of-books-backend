@@ -7,6 +7,8 @@ use App\Entity\Book;
 use App\Entity\Category;
 use App\Infrastructure\Curl\CurlService;
 use App\Infrastructure\Curl\Strategy\CurlGetStrategy;
+use App\Service\ApiService\BookApiService;
+use App\Service\DatabaseService\BookDBService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,23 +24,20 @@ class BookController extends AbstractController
   public function __construct(
     private CurlService $curlService,
     private EntityManagerInterface $entityManager,
+    private BookDBService $bookDBService,
+    private BookApiService $bookApiService,
   ) {
   }
 
 
   public function searchBooksByTitle(string $title): Response
   {
-    $bookRepository = $this->entityManager->getRepository(Book::class);
-    $books = $bookRepository->createQueryBuilder('b')
-      ->where('b.title LIKE :title')
-      ->setParameter('title', '%' . urldecode($title) . '%')
-      ->getQuery()
-      ->getResult();
+    $books = $this->bookDBService->searchBooksByTitle($title);
 
     if ($books) {
       // Book found in the database, return the book information
       return $this->json(
-        ['result' => $books],
+        ['totalItems' => count($books), 'result' => $books],
         Response::HTTP_OK,
         [],
         [
@@ -48,61 +47,23 @@ class BookController extends AbstractController
         ]
       );
     }
-
-    $apiKey = getenv('BOOKS_APP_API_KEY');
-    $url = "https://www.googleapis.com/books/v1/volumes?q=?+intitle:$title&key=$apiKey";
-    $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
-
-    $data = json_decode($result, true);
+    // if no books can be found in the DB, search for these books in the api
+    $result = $this->bookApiService->searchBooksByTitle($title);
 
     $books = [];
-    foreach ($data['items'] ?? [] as $bookData) {
+    foreach ($result['items'] ?? [] as $bookData) {
+      //check first if a book with the id is already stored in our database
+      if ($this->entityManager->getRepository(Book::class)->find($bookData['id'])) {
+        continue;
+      }
+
       // Save the book in the database
-      $book = new Book();
-      $book->setId($bookData['id']);
-      $book->setTitle($bookData['volumeInfo']['title']);
-      $book->setPublisher($bookData['volumeInfo']['publisher'] ?? '');
-      $book->setPublishedDate($bookData['volumeInfo']['publishedDate'] ?? '');
-      $book->setDescription($bookData['volumeInfo']['description'] ?? '');
-      $book->setPageCount($bookData['volumeInfo']['pageCount'] ?? 0);
-      $book->setAverageRating($bookData['volumeInfo']['averageRating'] ?? 0);
-      $book->setRatingsCount($bookData['volumeInfo']['ratingsCount'] ?? 0);
-      $book->setMaturityRating($bookData['volumeInfo']['maturityRating'] ?? '');
-      $book->setThumbnailUrl($bookData['volumeInfo']['imageLinks']['thumbnail'] ?? '');
-      $book->setLanguageCode($bookData['volumeInfo']['language'] ?? '');
-      $book->setQuantity(5);
-      $book->setNumAvailable(5);
-
-      // Save categories
-      foreach ($bookData['volumeInfo']['categories'] ?? [] as $categoryName) {
-        $category = $this->entityManager->getRepository(Category::class)->findOneBy(['categoryName' => $categoryName]);
-        if (!$category) {
-          $category = new Category();
-          $category->setCategoryName($categoryName);
-          $this->entityManager->persist($category);
-        }
-        $book->addCategory($category);
-      }
-
-      // Save authors
-      foreach ($bookData['volumeInfo']['authors'] ?? [] as $authorName) {
-        $author = $this->entityManager->getRepository(Author::class)->findOneBy(['lastName' => $authorName]);
-        if (!$author) {
-          $author = new Author();
-          $author->setLastName($authorName);
-          $this->entityManager->persist($author);
-        }
-        $book->addAuthor($author);
-      }
-
-      $this->entityManager->persist($book);
-
-      $this->entityManager->flush();
+      $book = $this->bookDBService->saveBookFromApi($bookData);
       $books[] = $book;
     }
 
     return $this->json(
-      ['result' => $books],
+      ['totalItems' => count($books), 'result' => $books],
       Response::HTTP_OK,
       [],
       [
@@ -115,33 +76,27 @@ class BookController extends AbstractController
 
   public function searchBooksByCategory(string $category): Response
   {
-    $apiKey = getenv('BOOKS_APP_API_KEY');
-    $url = "https://www.googleapis.com/books/v1/volumes?q=?+subject:$category&key=$apiKey";
-    $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
+    $result = $this->bookApiService->searchBooksByCategory($category);
 
-    return $this->json(['result' => json_decode($result)]);
+    return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
   }
 
   public function searchBooksByAuthor(string $author): Response
   {
-    $apiKey = getenv('BOOKS_APP_API_KEY');
-    $url = "https://www.googleapis.com/books/v1/volumes?q=?+inauthor:$author&key=$apiKey";
-    $result = $this->curlService->setStrategy(new CurlGetStrategy())->setUrl($url)->doRequest();
+    $result = $this->bookApiService->searchBooksByAuthor($author);
 
-    return $this->json(['result' => json_decode($result)]);
+    return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
   }
 
   public function displayNewestBooks(): Response
   {
-    $bookRepository = $this->entityManager->getRepository(Book::class);
-    $books = $bookRepository->findBy(['languageCode' => 'en'], ['publishedDate' => 'DESC'], 10);
-
+    $books = $this->bookDBService->get10NewestBooks();
     if (!$books) {
-      return $this->json(['result' => 'No Books Found']);
+      return $this->json(['totalItems' => 0, 'result' => 'No Books Found']);
     }
 
     return $this->json(
-      ['result' => $books],
+      ['totalItems' => count($books), 'result' => $books],
       Response::HTTP_OK,
       [],
       [

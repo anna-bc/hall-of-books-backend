@@ -4,21 +4,25 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+book_search_by_id:
+    path: /books/id={id}
+    controller: App\Controller\BookController::getBookById
+
 curl_search_title:
     path: /books/title={title}
-    controller: App\Controller\BookController::searchBooksByTitle
+    controller: App\Controller\BookController::getBooksByTitle
 
 curl_search_author:
     path: /books/author={author}
-    controller: App\Controller\BookController::searchBooksByAuthor
+    controller: App\Controller\BookController::getBooksByAuthor
 
 curl_search_category:
     path: /books/category={category}
-    controller: App\Controller\BookController::searchBooksByCategory
+    controller: App\Controller\BookController::getBooksByCategory
   
 books_10_newest:
     path: /books/
-    controller: App\Controller\BookController::displayNewestBooks
+    controller: App\Controller\BookController::getNewestBooks
 
 user_favorites:
     path: /my/favorites

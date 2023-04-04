@@ -19,6 +19,10 @@ class BookDBService
         $this->bookRepository = $bookRepository;
     }
 
+    public function searchBookById(string $id) : Book {
+        return $this->bookRepository->find($id);
+    }
+
     public function searchBooksByTitle(string $title): array
     {
         $books = $this->bookRepository->createQueryBuilder('b')

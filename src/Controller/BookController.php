@@ -29,15 +29,23 @@ class BookController extends AbstractController
   ) {
   }
 
+  public function getBookById(string $id) : Response {
+    $book = $this->bookDBService->searchBookById($id);
+    if (!$book) {
+      return $this->json(['totalItems' => 0, 'data' => 'No Book Found']);
+    }
 
-  public function searchBooksByTitle(string $title): Response
+    return $this->json(['totalItems' => 1, 'data' => $book]);
+  }
+
+  public function getBooksByTitle(string $title): Response
   {
     $books = $this->bookDBService->searchBooksByTitle($title);
 
     if ($books) {
       // Book found in the database, return the book information
       return $this->json(
-        ['totalItems' => count($books), 'result' => $books],
+        ['totalItems' => count($books), 'data' => $books],
         Response::HTTP_OK,
         [],
         [
@@ -63,7 +71,7 @@ class BookController extends AbstractController
     }
 
     return $this->json(
-      ['totalItems' => count($books), 'result' => $books],
+      ['totalItems' => count($books), 'data' => $books],
       Response::HTTP_OK,
       [],
       [
@@ -74,29 +82,29 @@ class BookController extends AbstractController
     );
   }
 
-  public function searchBooksByCategory(string $category): Response
+  public function getBooksByCategory(string $category): Response
   {
     $result = $this->bookApiService->searchBooksByCategory($category);
 
     return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
   }
 
-  public function searchBooksByAuthor(string $author): Response
+  public function getBooksByAuthor(string $author): Response
   {
     $result = $this->bookApiService->searchBooksByAuthor($author);
 
     return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
   }
 
-  public function displayNewestBooks(): Response
+  public function getNewestBooks(): Response
   {
     $books = $this->bookDBService->get10NewestBooks();
     if (!$books) {
-      return $this->json(['totalItems' => 0, 'result' => 'No Books Found']);
+      return $this->json(['totalItems' => 0, 'data' => 'No Books Found']);
     }
 
     return $this->json(
-      ['totalItems' => count($books), 'result' => $books],
+      ['totalItems' => count($books), 'data' => $books],
       Response::HTTP_OK,
       [],
       [

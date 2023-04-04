@@ -84,16 +84,21 @@ class BookController extends AbstractController
 
   public function getBooksByCategory(string $category): Response
   {
+    $books = $this->bookDBService->searchBookByCategory($category);
+    if ($books) {
+      return $this->json(['totalItems' => count($books), 'data' => $books]);
+    }
     $result = $this->bookApiService->searchBooksByCategory($category);
 
-    return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
+    return $this->json(['totalItems' => count($books), 'data' => $books]);
   }
 
   public function getBooksByAuthor(string $author): Response
   {
-    $result = $this->bookApiService->searchBooksByAuthor($author);
+    $books = $this->bookDBService->searchBookByAuthor($author);
+    // $result = $this->bookApiService->searchBooksByAuthor($author);
 
-    return $this->json(['totalItems' => $result['totalItems'], 'data' => $result['items']]);
+    return $this->json(['totalItems' => count($books), 'data' => $books]);
   }
 
   public function getNewestBooks(): Response

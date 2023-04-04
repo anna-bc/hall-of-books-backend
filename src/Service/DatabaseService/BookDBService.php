@@ -83,9 +83,15 @@ class BookDBService
         return $this->bookRepository->findBy(['languageCode' => ['en', 'de']], ['publishedDate' => 'DESC'], 10);
     }
 
-    public function searchBookByCategory(string $categoryName) {
-        $qb = $this->em->createQuery('SELECT b FROM App\Entity\Book b JOIN b.categories bc WHERE bc.categoryName = :categoryName')
-            ->setParameter('categoryName', $categoryName);
+    public function searchBookByCategory(string $categoryName) : array {
+        $qb = $this->em->createQuery('SELECT b FROM App\Entity\Book b JOIN b.categories bc WHERE bc.categoryName LIKE :categoryName')
+            ->setParameter('categoryName', '%' . urldecode($categoryName) . '%');
         return $qb->getResult();
     }
+
+    public function searchBookByAuthor(string $authorName) : array {
+        $qb = $this->em->createQuery('SELECT b FROM App\Entity\Book b JOIN b.authors ba WHERE ba.lastName LIKE :authorName')
+            ->setParameter('authorName', '%' . urldecode($authorName) . '%');
+        return $qb->getResult();
+    } 
 }

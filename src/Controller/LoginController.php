@@ -15,6 +15,6 @@ class LoginController extends AbstractController {
             return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->json(['message' => 'Welcome ' . $user->getUserIdentifier() .  '!']);
+        return $this->json(['message' => 'Welcome ' . $user->getUserIdentifier() .  '!', 'user' => $user]);
     }
 }

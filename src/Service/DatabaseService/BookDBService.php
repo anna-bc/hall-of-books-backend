@@ -78,4 +78,10 @@ class BookDBService
     public function get10NewestBooks() : array {
         return $this->bookRepository->findBy(['languageCode' => ['en', 'de']], ['publishedDate' => 'DESC'], 10);
     }
+
+    public function searchBookByCategory(string $categoryName) {
+        $qb = $this->em->createQuery('SELECT b FROM App\Entity\Book b JOIN b.categories bc WHERE bc.categoryName = :categoryName')
+            ->setParameter('categoryName', $categoryName);
+        return $qb->getResult();
+    }
 }

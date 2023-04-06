@@ -9,7 +9,5 @@ nelmio_cors:
     paths:
         '^/':
             origin_regex: true
-            allow_origin: ['^http://localhost:[0-9]+']
-            allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
             max_age: 3600
             hosts: ['^i\.']

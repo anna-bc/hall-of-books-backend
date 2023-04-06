@@ -26,7 +26,6 @@ class UserController extends AbstractController
     if ($user === null) {
       return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
     }
-    $user = $this->userRepository->find($user->getId());
     return $this->json(['favorites' => $user->getFavorites()]);
   }
 
@@ -35,24 +34,20 @@ class UserController extends AbstractController
     if ($user === null) {
       return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
     }
-
-    $user = $this->userRepository->find($user->getId());
     return $this->json(['borrowed' => $user->getBorrowedBooks()]);
   }
 
   public function addFavoriteBook(#[CurrentUser] ?User $user, string $id): Response
   {
+    if ($user === null) {
+      return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+    }
+
     $book = $this->bookDBService->searchBookById($id);
 
     if ($book === null) {
       return $this->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
     }
-
-    if ($user === null) {
-      return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
-    }
-
-    $user = $this->userRepository->find($user->getId());
 
     if ($user->getFavorites()->contains($book)) {
       return $this->json(['message' => 'Book already in favorites'], Response::HTTP_BAD_REQUEST);

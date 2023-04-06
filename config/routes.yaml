@@ -35,3 +35,7 @@ user_borrowed:
 register_user:
     path: /sign-up
     controller: App\Controller\RegistrationController::index
+
+add_favorite_book:
+    path: /my/favorites/{id}
+    controller: App\Controller\UserController::addFavoriteBook

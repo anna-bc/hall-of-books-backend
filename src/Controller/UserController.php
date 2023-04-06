@@ -40,34 +40,29 @@ class UserController extends AbstractController
     return $this->json(['borrowed' => $user->getBorrowedBooks()]);
   }
 
-  public function addFavoriteBook(string $id): Response
+  public function addFavoriteBook(#[CurrentUser] ?User $user, string $id): Response
   {
-
-    // var_dump($user);
-    // if ($user === null) {
-    //   return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
-    // }
-
-    // $user = $this->userRepository->find($user->getId());
-
-
     $book = $this->bookDBService->searchBookById($id);
 
     if ($book === null) {
       return $this->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
     }
 
-    var_dump($book);
-    // if ($user->getFavorites()->contains($book)) {
-    //   return $this->json(['message' => 'Book already in favorites'], Response::HTTP_BAD_REQUEST);
-    // }
+    if ($user === null) {
+      return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+    }
 
-    // $user->addFavorite($book);
+    $user = $this->userRepository->find($user->getId());
 
-    // $this->entityManager->persist($user);
+    if ($user->getFavorites()->contains($book)) {
+      return $this->json(['message' => 'Book already in favorites'], Response::HTTP_BAD_REQUEST);
+    }
 
-    // $this->entityManager->flush();
+    $user->addFavorite($book);
 
-    return $this->json(['success' => true]);
+    $this->entityManager->persist($user);
+    $this->entityManager->flush();
+
+    return $this->json(['success' => true, 'data' => $book]);
   }
 }

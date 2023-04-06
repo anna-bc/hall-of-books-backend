@@ -88,7 +88,19 @@ class BookController extends AbstractController
     if ($books) {
       return $this->json(['totalItems' => count($books), 'data' => $books]);
     }
+
     $result = $this->bookApiService->searchBooksByCategory($category);
+    $books = [];
+    foreach ($result['items'] ?? [] as $bookData) {
+      //check first if a book with the id is already stored in our database
+      if ($this->entityManager->getRepository(Book::class)->find($bookData['id'])) {
+        continue;
+      }
+
+      // Save the book in the database
+      $book = $this->bookDBService->saveBookFromApi($bookData);
+      $books[] = $book;
+    }
 
     return $this->json(['totalItems' => count($books), 'data' => $books]);
   }
@@ -96,7 +108,22 @@ class BookController extends AbstractController
   public function getBooksByAuthor(string $author): Response
   {
     $books = $this->bookDBService->searchBookByAuthor($author);
-    // $result = $this->bookApiService->searchBooksByAuthor($author);
+    if ($books) {
+      return $this->json(['totalItems' => count($books), 'data' => $books]);
+    }
+
+    $result = $this->bookApiService->searchBooksByAuthor($author);
+    $books = [];
+    foreach ($result['items'] ?? [] as $bookData) {
+      //check first if a book with the id is already stored in our database
+      if ($this->entityManager->getRepository(Book::class)->find($bookData['id'])) {
+        continue;
+      }
+
+      // Save the book in the database
+      $book = $this->bookDBService->saveBookFromApi($bookData);
+      $books[] = $book;
+    }
 
     return $this->json(['totalItems' => count($books), 'data' => $books]);
   }

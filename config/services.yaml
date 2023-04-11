@@ -25,3 +25,6 @@ services:
 
     App\Controller\BookController:
         autowire: true
+
+    App\Controller\LoginController:
+        autowire: true

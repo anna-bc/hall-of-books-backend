@@ -29,8 +29,8 @@ security:
                 max_attempts: 3 
                 interval: '30 minutes' # max 3 wrong login attempts per 15 minutes
 
-            access_token:
-                token_handler: App\Security\AccessTokenHandler
+            # access_token:
+            #     token_handler: App\Security\AccessTokenHandler
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 

@@ -13,33 +13,21 @@ class AccessToken
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $ownedBy = null;
-
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $expiresAt = null;
 
     #[ORM\Column(length: 68)]
     private ?string $token = null;
 
+    #[ORM\ManyToOne(inversedBy: 'accessTokens')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $ownedBy = null;
+
     private const PERSONAL_ACCESS_TOKEN_PREFIX = 'hob_';
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getOwnedBy(): ?User
-    {
-        return $this->ownedBy;
-    }
-
-    public function setOwnedBy(?User $ownedBy): self
-    {
-        $this->ownedBy = $ownedBy;
-
-        return $this;
     }
 
     public function getExpiresAt(): ?\DateTimeImmutable
@@ -64,6 +52,22 @@ class AccessToken
         $this->token = $token;
 
         return $this;
+    }
+
+    public function getOwnedBy(): ?User
+    {
+        return $this->ownedBy;
+    }
+
+    public function setOwnedBy(?User $ownedBy): self
+    {
+        $this->ownedBy = $ownedBy;
+
+        return $this;
+    }
+
+    public function isValid() : bool {
+        return $this->expiresAt > new \DateTimeImmutable('now');
     }
 
     public function __construct(string $tokenType = self::PERSONAL_ACCESS_TOKEN_PREFIX) {

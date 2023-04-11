@@ -17,17 +17,25 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            
+            login:
+                path: ^/login
+                stateless: true
+                json_login:
+                    check_path: api_login
 
-            json_login:
-                check_path: api_login
+                logout:
+                    path: api_logout
 
-            logout:
-                path: api_logout
+                login_throttling:
+                    max_attempts: 3 
+                    interval: '30 minutes' # max 3 wrong login attempts per 15 minutes
 
-            login_throttling:
-                max_attempts: 3 
-                interval: '30 minutes' # max 3 wrong login attempts per 15 minutes
-
+            access_token:
+                path: ^/user/
+                stateless: true
+                token_handler: App\Security\AccessTokenHandler
+                jwt: ~
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 

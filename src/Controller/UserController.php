@@ -85,7 +85,38 @@ class UserController extends AbstractController
     return $this->json(['success' => true, 'message' => 'Book removed from favorites successfully', 'favoriteList' => $user->getFavorites()], Response::HTTP_OK);
   }
 
-  public function returnBorrowedBook(string $id, #[CurrentUser] ?User $user) : Response {
+  public function addBorrowedBook(string $id, #[CurrentUser] ?User $user)
+  {
+    if (!$user) {
+      return $this->json(['success' => false, 'message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+    }
+
+    $book = $this->bookDBService->searchBookById($id);
+    if (!$book) {
+      return $this->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
+    }
+    if ($user->getBorrowedBooks()->contains($book)) {
+      return $this->json(['success' => false, 'message' => 'Book is already borrowed by the user'], Response::HTTP_BAD_REQUEST);
+    }
+
+    $numAvailable = $book->getNumAvailable();
+    if ($numAvailable <= 0) {
+      return $this->json(['success' => false, 'message' => 'No Books available to borrow'], Response::HTTP_BAD_REQUEST);
+    }
+
+    $user->addBorrowedBook($book);
+    $this->entityManager->persist($user);
+
+    $book->setNumAvailable($numAvailable - 1);
+    $this->entityManager->persist($book);
+
+    $this->entityManager->flush();
+
+    return $this->json(['success' => true, 'borrowedList' => $user->getBorrowedBooks()]);
+  }
+
+  public function returnBorrowedBook(string $id, #[CurrentUser] ?User $user): Response
+  {
     if ($user === null) {
       return $this->json(['success' => false, 'message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
     }

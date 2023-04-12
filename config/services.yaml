@@ -28,3 +28,6 @@ services:
 
     App\Controller\LoginController:
         autowire: true
+
+    App\Security\AccessTokenHandler:
+        autowire: true

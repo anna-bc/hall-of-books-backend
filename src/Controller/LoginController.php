@@ -25,8 +25,8 @@ class LoginController extends AbstractController
         }
 
         $tokens = $this->em->getRepository(AccessToken::class)->findBy(['ownedBy' => $user->getId()]);
+        $validToken = '';
         foreach ($tokens as $pos => $token) {
-            var_dump($token->getToken());
             if (!$token->isValid()) {
                 continue;
             }

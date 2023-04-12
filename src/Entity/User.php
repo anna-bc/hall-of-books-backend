@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -43,10 +44,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   #[ORM\JoinTable(name: 'user_borrowedBooks')]
   private Collection $borrowedBooks;
 
+  #[Ignore]
+  #[ORM\OneToMany(mappedBy: 'ownedBy', targetEntity: AccessToken::class, orphanRemoval: true)]
+  private Collection $accessTokens;
+
   public function __construct()
   {
     $this->favorites = new ArrayCollection();
     $this->borrowedBooks = new ArrayCollection();
+    $this->accessTokens = new ArrayCollection();
   }
 
   public function getId(): ?int
@@ -213,5 +219,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // $this->plainPassword = null;
 
     return $this;
+  }
+
+  /**
+   * @return Collection<int, AccessToken>
+   */
+  public function getAccessTokens(): Collection
+  {
+      return $this->accessTokens;
+  }
+
+  public function addAccessToken(AccessToken $accessToken): self
+  {
+      if (!$this->accessTokens->contains($accessToken)) {
+          $this->accessTokens->add($accessToken);
+          $accessToken->setOwnedBy($this);
+      }
+
+      return $this;
+  }
+
+  public function removeAccessToken(AccessToken $accessToken): self
+  {
+      if ($this->accessTokens->removeElement($accessToken)) {
+          // set the owning side to null (unless already changed)
+          if ($accessToken->getOwnedBy() === $this) {
+              $accessToken->setOwnedBy(null);
+          }
+      }
+
+      return $this;
+  }
+
+  public function getValidToken() {
+    $tokens = $this->getAccessTokens();
+    $validToken = '';
+    foreach($tokens as $token) {
+      if (!$token->isValid()) {
+        continue;
+      }
+      $validToken = $token;
+      break;
+    }
+    return $validToken;
   }
 }

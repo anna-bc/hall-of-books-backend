@@ -4,6 +4,10 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+api_logout:
+    path: /logout
+    controller: App\Controller\LogoutController::logout
+
 book_search_by_id:
     path: /books/id={id}
     controller: App\Controller\BookController::getBookById

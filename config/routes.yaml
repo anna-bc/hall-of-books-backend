@@ -39,3 +39,7 @@ register_user:
 add_favorite_book:
     path: /my/favorites/{id}
     controller: App\Controller\UserController::addFavoriteBook
+
+remove_favorite_book:
+    path: /my/favorites/{id}
+    controller: App\Controller\UserController::removeFavoriteBook

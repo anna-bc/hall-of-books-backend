@@ -25,7 +25,6 @@ class BookDBService
 
     public function searchBooksByTitle(string $title): array
     {
-    var_dump($title);
         $books = $this->bookRepository->createQueryBuilder('b')
             ->where('b.title LIKE :title')
             ->setParameter('title', '%' . urldecode($title) . '%')

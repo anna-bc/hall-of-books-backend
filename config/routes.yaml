@@ -47,3 +47,7 @@ add_favorite_book:
 remove_favorite_book:
     path: /my/favorites/remove/{id}
     controller: App\Controller\UserController::removeFavoriteBook
+    
+return_borrowed_book:
+    path: /my/borrowed/return/{id}
+    controller: App\Controller\UserController::returnBorrowedBook

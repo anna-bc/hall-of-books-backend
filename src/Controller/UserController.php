@@ -37,7 +37,7 @@ class UserController extends AbstractController
     return $this->json(['borrowed' => $user->getBorrowedBooks()]);
   }
 
-  public function addFavoriteBook(#[CurrentUser] ?User $user, string $id): Response
+  public function addFavoriteBook(string $id, #[CurrentUser] ?User $user): Response
   {
     if ($user === null) {
       return $this->json(['success' => false, 'message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);

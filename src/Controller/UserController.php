@@ -58,7 +58,7 @@ class UserController extends AbstractController
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'favoriteList' => $user->getFavorites()]);
+    return $this->json(['success' => true, 'message' => 'Book added to favorites successfully', 'favoriteList' => $user->getFavorites()], Response::HTTP_OK);
   }
 
   public function removeFavoriteBook(#[CurrentUser] ?User $user, string $id): Response
@@ -82,6 +82,6 @@ class UserController extends AbstractController
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'favoriteList' => $user->getFavorites()]);
+    return $this->json(['success' => true, 'message' => 'Book removed from favorites successfully', 'favoriteList' => $user->getFavorites()], Response::HTTP_OK);
   }
 }

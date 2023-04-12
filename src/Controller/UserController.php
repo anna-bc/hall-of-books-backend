@@ -60,4 +60,30 @@ class UserController extends AbstractController
 
     return $this->json(['success' => true, 'data' => $book]);
   }
+
+  public function returnBorrowedBook(string $id, #[CurrentUser] ?User $user) : Response {
+    if ($user === null) {
+      return $this->json(['success' => false, 'message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+    }
+
+    $book = $this->bookDBService->searchBookById($id);
+
+    if ($book === null) {
+      return $this->json(['success' => false, 'message' => 'Book not found'], Response::HTTP_NOT_FOUND);
+    }
+
+    if (!$user->getBorrowedBooks()->contains($book)) {
+      return $this->json(['success' => false, 'message' => 'Book is not borrowed'], Response::HTTP_BAD_REQUEST);
+    }
+
+    $user->removeBorrowedBook($book);
+    $this->entityManager->persist($user);
+
+    $book->setNumAvailable($book->getNumAvailable() + 1);
+    $this->entityManager->persist($book);
+
+    $this->entityManager->flush();
+
+    return $this->json(['success' => true, 'message' => 'Book returned successfully', 'borrowedList' => $user->getBorrowedBooks()], Response::HTTP_OK);
+  }
 }

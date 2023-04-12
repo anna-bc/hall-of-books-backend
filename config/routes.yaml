@@ -48,6 +48,10 @@ remove_favorite_book:
     path: /my/favorites/remove/{id}
     controller: App\Controller\UserController::removeFavoriteBook
     
+add_borrowed_book:
+    path: /my/borrowed/{id}
+    controller: App\Controller\UserController::addBorrowedBook
+    
 return_borrowed_book:
     path: /my/borrowed/return/{id}
     controller: App\Controller\UserController::returnBorrowedBook

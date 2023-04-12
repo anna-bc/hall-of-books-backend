@@ -44,6 +44,10 @@ add_favorite_book:
     path: /my/favorites/{id}
     controller: App\Controller\UserController::addFavoriteBook
 
+add_borrowed_book:
+    path: /my/borrowed/{id}
+    controller: App\Controller\UserController::addBorrowedBook
+    
 return_borrowed_book:
     path: /my/borrowed/return/{id}
     controller: App\Controller\UserController::returnBorrowedBook

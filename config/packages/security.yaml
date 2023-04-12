@@ -22,9 +22,6 @@ security:
       json_login:
         check_path: api_login
 
-      logout:
-        path: api_logout
-
       login_throttling:
         max_attempts: 3
         interval: "30 minutes" # max 3 wrong login attempts per 15 minutes

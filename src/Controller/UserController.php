@@ -58,7 +58,12 @@ class UserController extends AbstractController
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'message' => 'Book added to favorites successfully', 'favoriteList' => $user->getFavorites()], Response::HTTP_OK);
+    $favorites = [];
+    foreach ($user->getFavorites() as $pos => $book) {
+      array_push($favorites, $book);
+    }
+
+    return $this->json(['success' => true, 'message' => 'Book added to favorites successfully', 'favoriteList' => $favorites, 'book' => $book], Response::HTTP_OK);
   }
 
   public function removeFavoriteBook(#[CurrentUser] ?User $user, string $id): Response
@@ -82,7 +87,12 @@ class UserController extends AbstractController
     $this->entityManager->persist($user);
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'message' => 'Book removed from favorites successfully', 'favoriteList' => $user->getFavorites()], Response::HTTP_OK);
+    $favorites = [];
+    foreach ($user->getFavorites() as $pos => $book) {
+      array_push($favorites, $book);
+    }
+
+    return $this->json(['success' => true, 'message' => 'Book removed from favorites successfully', 'favoriteList' => $favorites, 'book' => $book], Response::HTTP_OK);
   }
 
   public function addBorrowedBook(string $id, #[CurrentUser] ?User $user)
@@ -112,7 +122,12 @@ class UserController extends AbstractController
 
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'borrowedList' => $user->getBorrowedBooks()]);
+    $borrowedList = [];
+    foreach ($user->getBorrowedBooks() as $pos => $book) {
+      array_push($borrowedList, $book);
+    }
+
+    return $this->json(['success' => true, 'borrowedList' => $borrowedList, 'book' => $book], Response::HTTP_OK);
   }
 
   public function returnBorrowedBook(string $id, #[CurrentUser] ?User $user): Response
@@ -139,6 +154,11 @@ class UserController extends AbstractController
 
     $this->entityManager->flush();
 
-    return $this->json(['success' => true, 'message' => 'Book returned successfully', 'borrowedList' => $user->getBorrowedBooks()], Response::HTTP_OK);
+    $borrowedList = [];
+    foreach($user->getBorrowedBooks() as $pos => $book) {
+      array_push($borrowedList, $book);
+    }
+
+    return $this->json(['success' => true, 'message' => 'Book returned successfully', 'borrowedList' => $borrowedList, 'book' => $book], Response::HTTP_OK);
   }
 }

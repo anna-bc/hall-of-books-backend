@@ -43,7 +43,6 @@ class BookController extends AbstractController
   public function getBooksByTitle(string $title): Response
   {
     $books = $this->bookDBService->searchBooksByTitle($title);
-
     if ($books) {
       // Book found in the database, return the book information
       return $this->json(

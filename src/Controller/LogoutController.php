@@ -15,7 +15,7 @@ class LogoutController extends AbstractController {
 
     public function logout(#[CurrentUser] ?User $user) {
         if (!$user) {
-            return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['success' => false, 'message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
         $tokens = $this->acRepository->findBy(['ownedBy' => $user->getId()]);
@@ -24,6 +24,6 @@ class LogoutController extends AbstractController {
         }
         $this->em->flush();
 
-        return $this->json(['message' => 'Successfully logged out user ' . $user->getUserIdentifier()], Response::HTTP_OK);
+        return $this->json(['success' => true, 'message' => 'Successfully logged out user ' . $user->getUserIdentifier()], Response::HTTP_OK);
     }
 }

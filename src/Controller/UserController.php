@@ -59,8 +59,8 @@ class UserController extends AbstractController
     $this->entityManager->flush();
 
     $favorites = [];
-    foreach ($user->getFavorites() as $pos => $book) {
-      array_push($favorites, $book);
+    foreach ($user->getFavorites() as $pos => $borrowedBook) {
+      array_push($favorites, $borrowedBook);
     }
 
     return $this->json(['success' => true, 'message' => 'Book added to favorites successfully', 'favoriteList' => $favorites, 'book' => $book], Response::HTTP_OK);
@@ -88,8 +88,8 @@ class UserController extends AbstractController
     $this->entityManager->flush();
 
     $favorites = [];
-    foreach ($user->getFavorites() as $pos => $book) {
-      array_push($favorites, $book);
+    foreach ($user->getFavorites() as $pos => $borrowedBook) {
+      array_push($favorites, $borrowedBook);
     }
 
     return $this->json(['success' => true, 'message' => 'Book removed from favorites successfully', 'favoriteList' => $favorites, 'book' => $book], Response::HTTP_OK);
@@ -123,8 +123,8 @@ class UserController extends AbstractController
     $this->entityManager->flush();
 
     $borrowedList = [];
-    foreach ($user->getBorrowedBooks() as $pos => $book) {
-      array_push($borrowedList, $book);
+    foreach ($user->getBorrowedBooks() as $pos => $borrowedBook) {
+      array_push($borrowedList, $borrowedBook);
     }
 
     return $this->json(['success' => true, 'borrowedList' => $borrowedList, 'book' => $book], Response::HTTP_OK);
@@ -155,8 +155,8 @@ class UserController extends AbstractController
     $this->entityManager->flush();
 
     $borrowedList = [];
-    foreach($user->getBorrowedBooks() as $pos => $book) {
-      array_push($borrowedList, $book);
+    foreach($user->getBorrowedBooks() as $pos => $borrowedBook) {
+      array_push($borrowedList, $borrowedBook);
     }
 
     return $this->json(['success' => true, 'message' => 'Book returned successfully', 'borrowedList' => $borrowedList, 'book' => $book], Response::HTTP_OK);

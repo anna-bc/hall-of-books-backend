@@ -55,3 +55,7 @@ add_borrowed_book:
 return_borrowed_book:
     path: /my/borrowed/return/{id}
     controller: App\Controller\UserController::returnBorrowedBook
+
+get_user:
+    path: /user/info
+    controller: App\Controller\UserController::getUserInfo

@@ -21,6 +21,22 @@ class UserController extends AbstractController
   ) {
   }
 
+  public function getUserInfo(#[CurrentUser] ?User $user): Response
+  {
+    if ($user === null) {
+      return $this->json(['message' => 'missing or wrong credentials'], Response::HTTP_UNAUTHORIZED);
+    }
+
+    $userInfo = [
+      'id' => $user->getId(),
+      'username' => $user->getUsername(),
+      'firstName' => $user->getFirstName(),
+      'lastName' => $user->getLastName(),
+      'registrationDate' => $user->getRegistrationDate(),
+    ];
+
+    return $this->json(['user' => $userInfo], Response::HTTP_OK);
+  }
   public function displayFavorites(#[CurrentUser] ?User $user): Response
   {
     if ($user === null) {
